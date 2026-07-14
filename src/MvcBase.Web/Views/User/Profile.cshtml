@@ -1,0 +1,17 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h1>Profile</h1>
+
+<dl>
+    <dt>Email</dt>
+    <dd>@Model.Email</dd>
+    <dt>Role</dt>
+    <dd>@Model.Role</dd>
+</dl>
+
+<form asp-controller="User" asp-action="Logout" method="post">
+    <button type="submit">Logout</button>
+</form>

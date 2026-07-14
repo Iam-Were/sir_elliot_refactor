@@ -1,0 +1,6 @@
+{
+  "name": "MvcBase",
+  "short_name": "MvcBase",
+  "start_url": "/",
+  "display": "standalone"
+}

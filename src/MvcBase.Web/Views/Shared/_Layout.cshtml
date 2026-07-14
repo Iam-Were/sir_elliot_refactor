@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MvcBase</title>
+    <link rel="manifest" href="~/manifest.json" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <nav>
+            <a asp-controller="Home" asp-action="Index">MvcBase</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-controller="User" asp-action="Profile">Profile</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Dashboard">Admin</a>
+                }
+                <form asp-controller="User" asp-action="Logout" method="post" class="inline-form">
+                    <button type="submit">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="User" asp-action="Login">Login</a>
+                <a asp-controller="User" asp-action="Register">Register</a>
+            }
+        </nav>
+    </header>
+
+    <main class="container">
+        @await Html.PartialAsync("_Notifications")
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; @DateTime.UtcNow.Year MvcBase &mdash; ported from the original PHP MVC skeleton.</p>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

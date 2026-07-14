@@ -1,0 +1,10 @@
+@{
+    var type = TempData["NotificationType"] as string;
+    var message = TempData["NotificationMessage"] as string;
+}
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="notification notification-@type">
+        @message
+    </div>
+}
