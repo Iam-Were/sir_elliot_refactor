@@ -1,8 +1,67 @@
 # Study guide: explaining this port
 
-This is **not a script to read verbatim** — it's the set of points you should be able to
-explain in your own words if asked. If you can walk through each section below without
-looking, you understand the code well enough to record the video yourself.
+Section 0 below is a **timed script for a 5-minute recording** — follow its beats and
+timings. Everything after it (sections 1–8) is supporting detail: use it to answer
+follow-up questions or to go deeper if your recording runs shorter than 5 minutes, but
+don't try to cram all of it into the video — that's what makes recordings run long.
+
+## 0. Five-minute demo script
+
+Have two things open before you hit record: this repo in your editor, and
+`dotnet run --project src/MvcBase.Web` ready to go in a terminal (or already running on
+`http://localhost:5299`). Register a throwaway account in advance so you're not typing
+live during the demo portion — typing on camera burns your budget fast.
+
+**0:00–0:25 — Hook (25s)**
+> "This is a port of a small PHP MVC teaching project — [Roberto-Celano/MVCbase](https://github.com/Roberto-Celano/MVCbase),
+> about 21 files — to ASP.NET Core MVC on .NET 9. It's small, but it wasn't a clean
+> 1:1 translation: part of the original source was broken, so part of this was
+> reconstruction, not just conversion."
+
+**0:25–1:10 — Show the broken PHP source (45s)**
+Open (or screenshot) `app/models/User.php` from the original repo — empty file.
+Then `app/controllers/UserController.php` — no class declaration, references an
+undefined `$registrationSuccess` variable.
+> "The user model was a completely empty file. The user controller had no class
+> declaration and referenced a variable that's never defined anywhere — it literally
+> could not run. Login, register, and profile had to be rebuilt from what `routes.php`
+> and `Auth.php` implied, not translated line by line."
+
+**1:10–2:40 — Code walkthrough, four stops (90s, ~20–25s each)**
+Move fast — open each file, say one sentence, move on:
+1. `Program.cs` — cookie auth + authorization policy setup. *"Auth is cookie-based with
+   ASP.NET Core's `PasswordHasher`, not full Identity — this app only ever needed one
+   table and one role, so I didn't bring in Identity's seven tables and scaffolded UI
+   for that."*
+2. `Controllers/UserController.cs` — the reconstructed Login/Register/Profile/Logout.
+   *"This whole controller had to be rebuilt — the original was non-functional."*
+3. `Controllers/AdminController.cs` + `[Authorize(Policy = "Admin")]`. *"In the PHP
+   version, the admin-only middleware was defined but never actually called anywhere —
+   dead code. Here it's an attribute on the action, so it can't be silently skipped."*
+4. `Services/CookieAuthService.cs` — point at `TempData` usage or the `Flash` extension
+   if visible. *"Session in PHP did two jobs — held the logged-in user and held flash
+   messages. Here those split into auth-cookie claims and TempData, so the app doesn't
+   need session state at all — a deliberate simplification."*
+
+**2:40–4:10 — Live demo in the browser/curl (90s)**
+Move through these without narrating every click — just call out what's happening:
+- Register / log in with your pre-made account → land on `/user/profile`, show email + role.
+- Log out → try `/user/profile` again → redirected to login (protected).
+- Log in as the seeded admin → `/admin/dashboard` → show the user list.
+- Log in as the non-admin account → try `/admin/dashboard` → redirected away, not shown.
+- Hit a bad URL → custom 404 page, not a framework default.
+
+**4:10–4:40 — The bug you actually found (30s)**
+> "While testing this, logout was returning a confusing 405 error instead of logging
+> out. Turned out ASP.NET Core's error-page middleware re-executes failed requests
+> using the *original* HTTP method — so a POST that failed was being re-executed as a
+> POST against my error page, which only accepted GET. One-line fix, but it's the kind
+> of thing you only catch by actually running the app end-to-end, not just compiling it."
+
+**4:40–5:00 — Wrap-up (20s)**
+> "Build is zero warnings with warnings-as-errors on, formatting's verified, six unit
+> tests pass, and I drove the whole flow — register through admin access control —
+> against the running app, not just the test suite. Repo's linked below."
 
 ## 1. What this is
 
