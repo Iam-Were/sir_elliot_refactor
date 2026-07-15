@@ -30,3 +30,6 @@ Thumbs.db
 
 ## Claude Code harness config (not project source)
 .claude/
+
+## Docs kept local only (not committed to the repo)
+docs/
