@@ -33,7 +33,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    DbInitializer.SeedAdmin(db, app.Configuration, logger);
+    DbInitializer.Seed(db, app.Configuration, logger);
 }
 
 if (!app.Environment.IsDevelopment())
